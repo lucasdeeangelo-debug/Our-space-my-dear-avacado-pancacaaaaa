@@ -1,53 +1,43 @@
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
-const app = express();
 
+const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-let notes = {
-  her: [],
-  him: []
-};
+const DATA_FILE = "notes.json";
 
- const reveal = new Date("2026-06-09T00:00:00");
-
-let pulse = false;
-
-setInterval(()=>{
-let diff = reveal - new Date();
-
-if(diff <= 0){
-document.getElementById("timer").innerText = "🖤 it's open.";
-return;
+if (!fs.existsSync(DATA_FILE)) {
+  fs.writeFileSync(DATA_FILE, JSON.stringify({ her: [], him: [] }));
 }
 
-let d = Math.floor(diff/(1000*60*60*24));
-let h = Math.floor((diff/(1000*60*60))%24);
-let m = Math.floor((diff/(1000*60))%60);
-let s = Math.floor((diff/1000)%60);
+function getNotes(){
+  return JSON.parse(fs.readFileSync(DATA_FILE));
+}
 
-let el = document.getElementById("timer");
+function saveNotes(data){
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
 
-el.innerText = `⏳ ${d}d ${h}h ${m}m ${s}s`;
+const revealDate = new Date("2026-06-09T00:00:00");
 
-pulse = !pulse;
-el.style.opacity = pulse ? "1" : "0.6";
-el.style.color = pulse ? "#ff4d6d" : "white";
+app.post("/save", (req, res) => {
+  const { user, content } = req.body;
 
-},1000);
+  let data = getNotes();
+  data[user].push({
+    content,
+    date: new Date().toLocaleString()
+  });
 
-  if (!notes[user]) return res.sendStatus(400);
-
-  notes[user].push({ content, date });
+  saveNotes(data);
   res.sendStatus(200);
 });
 
-app.get("/notes/:user", (req, res) => {
-  if (new Date() < revealDate) {
-    return res.json({ locked: true });
-  }
-  res.json(notes[req.params.user] || []);
+app.get("/notes", (req, res) => {
+  const locked = new Date() < revealDate;
+  res.json({ locked, data: getNotes() });
 });
 
 app.get("/", (req, res) => {
