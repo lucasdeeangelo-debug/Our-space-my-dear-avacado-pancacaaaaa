@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reveal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Revealed Notes</h1>
+
+<div id="her"></div>
+<div id="him"></div>
+
+<script>
+fetch("/notes/her")
+.then(r=>r.json())
+.then(data=>{
+  if(data.locked){
+    document.body.innerHTML="<h2>Not yet...</h2>";
+  } else {
+    document.getElementById("her").innerHTML =
+      data.map(n=>`<p>${n.date}: ${n.content}</p>`).join("");
+  }
+});
+
+fetch("/notes/him")
+.then(r=>r.json())
+.then(data=>{
+  if(!data.locked){
+    document.getElementById("him").innerHTML =
+      data.map(n=>`<p>${n.date}: ${n.content}</p>`).join("");
+  }
+});
+</script>
+
+</body>
+</html>
