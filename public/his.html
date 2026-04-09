@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>His Space</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Say it here.</h2>
+
+<textarea id="note"></textarea>
+<button onclick="save()">Save</button>
+
+<h3>Playlist</h3>
+<audio controls src="stargazing.mp3"></audio>
+<audio controls src="ultra.mp3"></audio>
+
+<script>
+function save(){
+  fetch("/save", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      user:"him",
+      content: document.getElementById("note").value
+    })
+  });
+}
+</script>
+
+</body>
+</html>
