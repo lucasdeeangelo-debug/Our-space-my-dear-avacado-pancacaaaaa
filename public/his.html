@@ -1,31 +1,114 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>His Space</title>
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Say it here.</h2>
+<h1>🖤 Still hidden.</h1>
 
+<div class="box">
 <textarea id="note"></textarea>
-<button onclick="save()">Save</button>
+<button onclick="save()">Seal it</button>
+<p id="status"></p>
+</div>
 
-<h3>Playlist</h3>
-<audio controls src="stargazing.mp3"></audio>
-<audio controls src="ultra.mp3"></audio>
+<p id="count"></p>
+<p id="timer"></p>
+<p id="missed"></p>
+
+<div id="notes"></div>
+
+<h2>🎧 Playlist</h2>
+
+<select id="playlist" onchange="changeSong()">
+  <option value="drive.mp3">Simp on me</option>
+  <option value="giveup.mp3">Vent</option>
+  <option value="stargazing.mp3">Safe</option>
+  <option value="ultra.mp3">Deep</option>
+</select>
+
+<audio id="player" controls></audio>
+
+<br><br>
+
+<input type="file" accept="audio/*" onchange="addSong(event)">
 
 <script>
+
 function save(){
-  fetch("/save", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      user:"him",
-      content: document.getElementById("note").value
-    })
-  });
+fetch("/save",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+user:"him",
+content:document.getElementById("note").value
+})
+}).then(()=>{
+document.getElementById("status").innerText="🖤 sealed.";
+load();
+});
 }
+
+function load(){
+fetch("/notes")
+.then(r=>r.json())
+.then(d=>{
+let html="", count=0;
+
+d.data.him.forEach(n=>{
+count++;
+html+=`<div class="note ${d.locked?'blur':''}">
+${n.date}<br>${n.content}
+</div>`;
+});
+
+document.getElementById("notes").innerHTML=html;
+document.getElementById("count").innerText="🖤 messages: "+count;
+
+let last = d.data.him.slice(-1)[0];
+if(last){
+let diff = (new Date() - new Date(last.date))/(1000*60*60*24);
+if(diff > 1){
+document.getElementById("missed").innerText =
+"you haven’t written in a while.";
+}
+}
+});
+}
+
+function changeSong(){
+let song = document.getElementById("playlist").value;
+let player = document.getElementById("player");
+player.src = song;
+player.play();
+}
+
+function addSong(e){
+let file = e.target.files[0];
+let url = URL.createObjectURL(file);
+
+let select = document.getElementById("playlist");
+let option = document.createElement("option");
+
+option.text = file.name;
+option.value = url;
+
+select.add(option);
+}
+
+const reveal = new Date("2026-06-09T00:00:00");
+
+setInterval(()=>{
+let diff = reveal - new Date();
+let d = Math.floor(diff/(1000*60*60*24));
+let h = Math.floor((diff/(1000*60*60))%24);
+
+document.getElementById("timer").innerText =
+`⏳ ${d}d ${h}h`;
+},1000);
+
+load();
 </script>
 
 </body>
