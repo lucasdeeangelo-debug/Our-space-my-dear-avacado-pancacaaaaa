@@ -1,0 +1,26 @@
+body {
+  background: #0f0f0f;
+  color: white;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.container {
+  margin-top: 100px;
+}
+
+textarea {
+  width: 80%;
+  height: 150px;
+  margin: 10px;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+}
+
+button {
+  padding: 10px;
+  background: #ff4d6d;
+  border: none;
+  color: white;
+}
