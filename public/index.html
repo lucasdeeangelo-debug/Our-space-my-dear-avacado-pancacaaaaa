@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Our Space</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>🖤 Our Space</h1>
+
+  <input id="user" placeholder="who are you? (her/him)">
+  <input id="pass" placeholder="password" type="password">
+
+  <button onclick="login()">Enter</button>
+</div>
+
+<script>
+function login(){
+  const u = document.getElementById("user").value;
+  const p = document.getElementById("pass").value;
+
+  if(u==="her" && p==="1234") window.location="her.html";
+  else if(u==="him" && p==="5678") window.location="his.html";
+  else alert("Wrong");
+}
+</script>
+
+</body>
+</html>
