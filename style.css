@@ -1,0 +1,46 @@
+body {
+  background: linear-gradient(135deg,#0d0d0d,#1a1a1a);
+  color:white;
+  font-family:Arial;
+}
+
+.center {
+  text-align:center;
+  margin-top:100px;
+}
+
+textarea {
+  width:100%;
+  height:120px;
+  background:#1a1a1a;
+  color:white;
+  border:none;
+  border-radius:10px;
+  padding:10px;
+}
+
+button {
+  background:#ff4d6d;
+  border:none;
+  padding:10px;
+  border-radius:10px;
+  color:white;
+  margin-top:10px;
+}
+
+.note {
+  background:#1a1a1a;
+  padding:10px;
+  margin:10px 0;
+  border-radius:10px;
+}
+
+.blur {
+  filter:blur(8px);
+  opacity:0.6;
+}
+
+audio {
+  width:100%;
+  margin:10px 0;
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>🖤 For you. Just… not yet.</h1>
+
+<h2>Things I never said to you</h2>
+
+<form action="/save" method="POST">
+<input type="hidden" name="user" value="her">
+<textarea name="content" required></textarea>
+<button>Save</button>
+</form>
+
+<button onclick="load()">Reveal</button>
+<p id="count"></p>
+<div id="notes"></div>
+
+<h2>🎧 Playlists</h2>
+
+<h3>💗 Simp on me</h3>
+<audio controls src="drive.mp3"></audio>
+
+<h3>🖤 Vent</h3>
+<audio controls src="giveup.mp3"></audio>
+
+<h3>🌫 Safe</h3>
+<audio controls src="stargazing.mp3"></audio>
+
+<h3>🖤 Deep</h3>
+<audio controls src="ultra.mp3"></audio>
+
+<br><br>
+
+<button onclick="play()">🎧 Enter the mood</button>
+<audio id="bg" loop>
+  <source src="drive.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+function load(){
+fetch('/notes')
+.then(r=>r.json())
+.then(d=>{
+let html="", count=0;
+
+d.notes.forEach(n=>{
+count++;
+html+=`<div class="note ${d.locked?'blur':''}">
+${n.user} | ${new Date(n.date).toLocaleString()}<br><br>${n.content}
+</div>`;
+});
+
+document.getElementById("notes").innerHTML=html;
+document.getElementById("count").innerText="🖤 Messages: "+count;
+});
+}
+
+function play(){
+document.getElementById("bg").play();
+}
+</script>
+
+</body>
+</html>
