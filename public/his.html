@@ -1,14 +1,16 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>🖤 Still hidden.</h1>
+<h1>🖤 For you. Just… not yet.</h1>
+
+<p id="affirm"></p>
 
 <div class="box">
-<textarea id="note"></textarea>
+<textarea id="note" placeholder="write what you can't say..."></textarea>
 <button onclick="save()">Seal it</button>
 <p id="status"></p>
 </div>
@@ -36,12 +38,25 @@
 
 <script>
 
+// AFFIRMATIONS
+const lines = [
+"I love you.",
+"I'm trying.",
+"I'm sorry for when I disappear.",
+"You matter more than I say.",
+"I hope you stay."
+];
+document.getElementById("affirm").innerText =
+lines[Math.floor(Math.random()*lines.length)];
+
+
+// SAVE
 function save(){
 fetch("/save",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
-user:"him",
+user:"her",
 content:document.getElementById("note").value
 })
 }).then(()=>{
@@ -50,13 +65,15 @@ load();
 });
 }
 
+
+// LOAD NOTES
 function load(){
 fetch("/notes")
 .then(r=>r.json())
 .then(d=>{
 let html="", count=0;
 
-d.data.him.forEach(n=>{
+d.data.her.forEach(n=>{
 count++;
 html+=`<div class="note ${d.locked?'blur':''}">
 ${n.date}<br>${n.content}
@@ -66,7 +83,8 @@ ${n.date}<br>${n.content}
 document.getElementById("notes").innerHTML=html;
 document.getElementById("count").innerText="🖤 messages: "+count;
 
-let last = d.data.him.slice(-1)[0];
+// MISSED WRITING
+let last = d.data.her.slice(-1)[0];
 if(last){
 let diff = (new Date() - new Date(last.date))/(1000*60*60*24);
 if(diff > 1){
@@ -77,6 +95,22 @@ document.getElementById("missed").innerText =
 });
 }
 
+
+// COUNTDOWN
+const reveal = new Date("2026-06-09T00:00:00");
+
+setInterval(()=>{
+let diff = reveal - new Date();
+
+let d = Math.floor(diff/(1000*60*60*24));
+let h = Math.floor((diff/(1000*60*60))%24);
+
+document.getElementById("timer").innerText =
+`⏳ ${d}d ${h}h`;
+},1000);
+
+
+// PLAYLIST
 function changeSong(){
 let song = document.getElementById("playlist").value;
 let player = document.getElementById("player");
@@ -84,6 +118,7 @@ player.src = song;
 player.play();
 }
 
+// ADD CUSTOM SONG
 function addSong(e){
 let file = e.target.files[0];
 let url = URL.createObjectURL(file);
@@ -97,17 +132,8 @@ option.value = url;
 select.add(option);
 }
 
-const reveal = new Date("2026-06-09T00:00:00");
 
-setInterval(()=>{
-let diff = reveal - new Date();
-let d = Math.floor(diff/(1000*60*60*24));
-let h = Math.floor((diff/(1000*60*60))%24);
-
-document.getElementById("timer").innerText =
-`⏳ ${d}d ${h}h`;
-},1000);
-
+// INIT
 load();
 </script>
 
