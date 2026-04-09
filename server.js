@@ -1,64 +1,37 @@
 const express = require("express");
+const path = require("path");
 const app = express();
-const bodyParser = require("body-parser");
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
-let notes = [];
-
-const users = {
-  "her": "1234",
-  "him": "5678"
+let notes = {
+  her: [],
+  him: []
 };
 
-// LOGIN
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
+const revealDate = new Date("2026-06-09T00:00:00");
 
-  if (users[username] === password) {
-    return res.redirect(username === "her" ? "/her.html" : "/him.html");
-  } else {
-    res.send("Wrong password");
-  }
-});
-
-// SAVE NOTE
 app.post("/save", (req, res) => {
-  notes.push({
-    user: req.body.user,
-    content: req.body.content,
-    date: new Date().toISOString()
-  });
-  res.redirect("back");
+  const { user, content } = req.body;
+  const date = new Date().toLocaleString();
+
+  if (!notes[user]) return res.sendStatus(400);
+
+  notes[user].push({ content, date });
+  res.sendStatus(200);
 });
 
-// GET NOTES + LOCK
-app.get("/notes", (req, res) => {
-  const now = new Date();
-  const lockDate = new Date("2026-04-09T00:00:00");
-  const revealDate = new Date("2026-06-09T00:00:00");
-
-  if (now > lockDate && now < revealDate) {
-    return res.json({ locked: true, notes });
+app.get("/notes/:user", (req, res) => {
+  if (new Date() < revealDate) {
+    return res.json({ locked: true });
   }
-
-  res.json({ locked: false, notes });
+  res.json(notes[req.params.user] || []);
 });
 
-// MAIN PAGE CONTROL
 app.get("/", (req, res) => {
-  const now = new Date();
-  const revealDate = new Date("2026-06-09T00:00:00");
-
-  if (now >= revealDate) {
-    res.sendFile(__dirname + "/public/reveal.html");
-  } else {
-    res.sendFile(__dirname + "/public/index.html");
-  }
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Running on port " + PORT));
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
-});
